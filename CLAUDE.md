@@ -8,24 +8,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Arcade Vault is an online gaming platform for competing on scoreboards. Built with **Next.js 16**, **React 19**, **TypeScript**, and **Tailwind CSS v4**.
 
-## Commands
-
-```bash
-npm run dev      # start dev server (Turbopack by default in v16)
-npm run build    # production build (also Turbopack by default)
-npm run start    # serve production build
-npm run lint     # ESLint via the ESLint CLI (not `next lint` — changed in v16)
-```
-
 ## Key Next.js 16 Breaking Changes
 
 Before writing any code, consult `node_modules/next/dist/docs/` for accurate API details. This version has significant differences from v13/v14/v15:
 
 **Async Request APIs (fully breaking)** — synchronous access is removed. `params`, `searchParams`, `cookies()`, `headers()`, and `draftMode()` are all async:
+
 ```ts
 // Page props
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 }
 // Run `npx next typegen` to generate PageProps / LayoutProps helpers
 ```
@@ -43,6 +39,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 **ESLint** — uses flat config (`eslint.config.mjs`), not `.eslintrc`. Run via `eslint` CLI, not `next lint`.
 
 **Parallel Routes `default.js`** — now required when using parallel routes.
+
+## Skills
+
+always use /frontend-design to design user ui
 
 ## Architecture
 

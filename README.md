@@ -14,3 +14,12 @@ https://github.com/Klerith/fernando-skills
 ```bash
 npx skills@latest add Klerith/fernando-skills
 ```
+
+## Commands
+
+```bash
+npm run dev      # start dev server (Turbopack by default in v16)
+npm run build    # production build (also Turbopack by default)
+npm run start    # serve production build
+npm run lint     # ESLint via the ESLint CLI (not `next lint` — changed in v16)
+```
