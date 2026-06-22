@@ -1,7 +1,7 @@
 ---
 id: 01
 title: Arcade Vault MVP — All Screens (Visual)
-state: Approved
+state: Implemented
 date: 2026-06-21
 objective:
   Port all five template screens (Library, Detail, Player, Auth, Hall of Fame)
