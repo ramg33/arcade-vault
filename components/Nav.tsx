@@ -20,7 +20,7 @@ export default function Nav() {
   }, []);
 
   const isActive = (name: "biblioteca" | "salon") => {
-    if (name === "biblioteca") return pathname === "/" || pathname.startsWith("/games");
+    if (name === "biblioteca") return pathname.startsWith("/games");
     if (name === "salon") return pathname === "/hall";
     return false;
   };
@@ -48,7 +48,7 @@ export default function Nav() {
 
         <div className="links">
           <Link
-            href="/"
+            href="/games"
             className={isActive("biblioteca") ? "active" : ""}
             onClick={() => setOpen(false)}
           >
@@ -99,7 +99,7 @@ export default function Nav() {
         </div>
         <a
           className={isActive("biblioteca") ? "active" : ""}
-          onClick={() => go("/")}
+          onClick={() => go("/games")}
           style={{ cursor: "pointer" }}
         >
           Biblioteca
