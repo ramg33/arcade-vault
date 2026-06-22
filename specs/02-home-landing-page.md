@@ -1,6 +1,6 @@
 # SPEC 02 — Home Landing Page
 
-> **Status:** Approved · **Depends on:** SPEC 01 · **Date:** 2026-06-22
+> **Status:** Implemented · **Depends on:** SPEC 01 · **Date:** 2026-06-22
 > **Objective:** Replace `/` with the marketing landing page from `references/templates/home-about/home.jsx`, and move the Library to `/games`.
 
 ## Scope
