@@ -19,9 +19,10 @@ export default function Nav() {
     return () => window.removeEventListener("av-auth", sync);
   }, []);
 
-  const isActive = (name: "biblioteca" | "salon") => {
+  const isActive = (name: "biblioteca" | "salon" | "about") => {
     if (name === "biblioteca") return pathname.startsWith("/games");
     if (name === "salon") return pathname === "/hall";
+    if (name === "about") return pathname === "/about";
     return false;
   };
 
@@ -60,6 +61,13 @@ export default function Nav() {
             onClick={() => setOpen(false)}
           >
             Salón de la Fama
+          </Link>
+          <Link
+            href="/about"
+            className={isActive("about") ? "active" : ""}
+            onClick={() => setOpen(false)}
+          >
+            About Us
           </Link>
         </div>
 
@@ -110,6 +118,13 @@ export default function Nav() {
           style={{ cursor: "pointer" }}
         >
           Salón de la Fama
+        </a>
+        <a
+          className={isActive("about") ? "active" : ""}
+          onClick={() => go("/about")}
+          style={{ cursor: "pointer" }}
+        >
+          About Us
         </a>
         <a
           className={pathname === "/auth" ? "active" : ""}
