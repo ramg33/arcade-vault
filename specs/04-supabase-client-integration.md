@@ -1,6 +1,6 @@
 # SPEC 04 — Supabase Client Integration
 
-> **Status:** Approved · **Depends on:** SPEC 03 · **Date:** 2026-06-28
+> **Status:** Implemented · **Depends on:** SPEC 03 · **Date:** 2026-06-28
 > **Objective:** Install `@supabase/supabase-js` and `@supabase/ssr`, add the project's env vars to `.env.local`, and expose two typed client factories at `lib/supabase/client.ts` (browser) and `lib/supabase/server.ts` (server) for future specs to import.
 
 ## Scope
