@@ -14,6 +14,8 @@ export default function AsteroidsGame(props: AsteroidsGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cbRef = useRef(props);
   cbRef.current = props;
+  const pausedRef = useRef(props.paused);
+  pausedRef.current = props.paused;
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -437,7 +439,6 @@ export default function AsteroidsGame(props: AsteroidsGameProps) {
     // ── Update ─────────────────────────────────────────────────────────────────
     function update(dt: number) {
       if (state === 'gameover') {
-        if (pressed('Space')) initGame();
         particles.forEach((p) => p.update(dt));
         particles = particles.filter((p) => !p.dead);
         return;
@@ -574,6 +575,7 @@ export default function AsteroidsGame(props: AsteroidsGameProps) {
 
       if (state === 'gameover')
         drawOverlay('GAME OVER', `PUNTAJE: ${score}   —   ESPACIO PARA REINICIAR`);
+      if (pausedRef.current) drawOverlay('EN PAUSA', 'PULSA REANUDAR PARA CONTINUAR');
     }
 
     // ── Loop ───────────────────────────────────────────────────────────────────
@@ -583,7 +585,7 @@ export default function AsteroidsGame(props: AsteroidsGameProps) {
     function loop(ts: number) {
       const dt = lastTime === null ? 0 : Math.min((ts - lastTime) / 1000, 0.05);
       lastTime = ts;
-      update(dt);
+      if (!pausedRef.current) update(dt);
       draw();
       rafHandle = requestAnimationFrame(loop);
     }
@@ -598,12 +600,39 @@ export default function AsteroidsGame(props: AsteroidsGameProps) {
     };
   }, []);
 
+  const touchButton = (label: string, code: string) => ({
+    onTouchStart: (e: React.TouchEvent) => {
+      e.preventDefault();
+      const event = new KeyboardEvent('keydown', { code, bubbles: true });
+      window.dispatchEvent(event);
+    },
+    onTouchEnd: (e: React.TouchEvent) => {
+      e.preventDefault();
+      const event = new KeyboardEvent('keyup', { code, bubbles: true });
+      window.dispatchEvent(event);
+    },
+    onTouchCancel: (e: React.TouchEvent) => {
+      e.preventDefault();
+      const event = new KeyboardEvent('keyup', { code, bubbles: true });
+      window.dispatchEvent(event);
+    },
+    children: label,
+  });
+
   return (
-    <canvas
-      ref={canvasRef}
-      width={800}
-      height={600}
-      style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-    />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+      />
+      <div className="asteroids-touch-controls">
+        <button {...touchButton('◁', 'ArrowLeft')} />
+        <button {...touchButton('△', 'ArrowUp')} />
+        <button {...touchButton('▷', 'ArrowRight')} />
+        <button {...touchButton('●', 'Space')} />
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 # SPEC 05 — Asteroids Game Integration
 
-> **Status:** Approved · **Depends on:** SPEC 04 · **Date:** 2026-06-29
+> **Status:** Implemented · **Depends on:** SPEC 04 · **Date:** 2026-06-29
 > **Objective:** Port the reference Asteroids canvas game into a self-contained React component and wire it to the existing `/games/asteroids/play` page, with the game reporting score, lives, level, and game-over events back to the platform's React HUD.
 
 ## Scope
