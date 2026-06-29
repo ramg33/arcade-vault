@@ -10,8 +10,10 @@ export type AsteroidsGameProps = {
   onGameOver: (finalScore: number) => void;
 };
 
-export default function AsteroidsGame(_props: AsteroidsGameProps) {
+export default function AsteroidsGame(props: AsteroidsGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cbRef = useRef(props);
+  cbRef.current = props;
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -411,6 +413,7 @@ export default function AsteroidsGame(_props: AsteroidsGameProps) {
       killsSinceSpawn = 0;
       ship.reset();
       spawnAsteroids(3 + level);
+      cbRef.current.onLevelChange(level);
     }
 
     function explode(x: number, y: number, count = 8) {
@@ -421,8 +424,10 @@ export default function AsteroidsGame(_props: AsteroidsGameProps) {
       explode(ship.x, ship.y, 14);
       ship.dead = true;
       lives--;
+      cbRef.current.onLivesChange(lives);
       if (lives <= 0) {
         state = 'gameover';
+        cbRef.current.onGameOver(score);
       } else {
         state = 'dead';
         deadTimer = 2;
@@ -471,6 +476,7 @@ export default function AsteroidsGame(_props: AsteroidsGameProps) {
         }
       }
 
+      const prevScore = score;
       const newAsteroids: Asteroid[] = [];
       for (const b of bullets) {
         for (const a of asteroids) {
@@ -491,6 +497,7 @@ export default function AsteroidsGame(_props: AsteroidsGameProps) {
           }
         }
       }
+      if (score !== prevScore) cbRef.current.onScoreChange(score);
       asteroids = asteroids.filter((a) => !a.dead).concat(newAsteroids);
       bullets = bullets.filter((b) => !b.dead);
 
