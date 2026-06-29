@@ -1248,3 +1248,25 @@ a { color: inherit; text-decoration: none; }
 .term-body .success { margin-top: 12px; color: var(--green); text-shadow: 0 0 6px rgba(0,255,136,0.45); font-weight: 700; white-space: pre-wrap; }
 .term-body .error { margin-top: 12px; color: var(--magenta); text-shadow: 0 0 6px rgba(255,0,110,0.45); font-weight: 700; white-space: pre-wrap; }
 .term-body .caret { animation: blink 1s steps(1) infinite; }
+
+/* ── Asteroids touch controls (mobile only) ───────────────────────────────── */
+.asteroids-touch-controls { display: none; gap: 12px; }
+@media (pointer: coarse) {
+  .asteroids-touch-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+}
+.asteroids-touch-controls button {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+.asteroids-touch-controls button:active { background: rgba(255,255,255,0.2); }
