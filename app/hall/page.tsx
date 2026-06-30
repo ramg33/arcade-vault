@@ -14,7 +14,6 @@ export default function HallOfFamePage() {
 
   useEffect(() => {
     tabRef.current = tab;
-    setLoading(true);
     const queriedTab = tab;
     createClient()
       .from('scores')
@@ -62,7 +61,10 @@ export default function HallOfFamePage() {
           <button
             key={g.id}
             className={'chip' + (tab === g.id ? ' active' : '')}
-            onClick={() => setTab(g.id)}
+            onClick={() => {
+              setLoading(true);
+              setTab(g.id);
+            }}
           >
             {g.title}
           </button>

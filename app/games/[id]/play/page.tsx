@@ -17,17 +17,13 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState(1);
+  const [asteroidsLevel, setAsteroidsLevel] = useState(1);
+  const level = isAsteroids ? asteroidsLevel : Math.floor(score / 2500) + 1;
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [name, setName] = useState('INVITADO');
+  const [name, setName] = useState(() => getUser()?.name ?? 'INVITADO');
   const [saved, setSaved] = useState(false);
   const [gameKey, setGameKey] = useState(0);
-
-  useEffect(() => {
-    const u = getUser();
-    if (u) setName(u.name);
-  }, []);
 
   useEffect(() => {
     if (isAsteroids || over || paused) return;
@@ -35,17 +31,12 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
     return () => clearInterval(t);
   }, [isAsteroids, over, paused]);
 
-  useEffect(() => {
-    if (isAsteroids) return;
-    if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [isAsteroids, score]);
-
   const endGame = () => setOver(true);
 
   const restart = () => {
     setScore(0);
     setLives(3);
-    setLevel(1);
+    setAsteroidsLevel(1);
     setPaused(false);
     setOver(false);
     setSaved(false);
@@ -109,7 +100,7 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
             paused={paused}
             onScoreChange={setScore}
             onLivesChange={setLives}
-            onLevelChange={setLevel}
+            onLevelChange={setAsteroidsLevel}
             onGameOver={(finalScore) => {
               setScore(finalScore);
               setOver(true);

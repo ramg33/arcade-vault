@@ -1,6 +1,6 @@
 # SPEC 06 — Supabase Leaderboard and Game Registry
 
-> **Status:** Approved · **Depends on:** SPEC 04, SPEC 05 · **Date:** 2026-06-29
+> **Status:** Implemented · **Depends on:** SPEC 04, SPEC 05 · **Date:** 2026-06-29
 > **Objective:** Create a `games` table (id + title) and a `scores` table in
 > Supabase, wire the Asteroids game-over modal to persist scores to the database,
 > and replace `seededScores()` in `/hall` with live per-game top-12 queries.
@@ -19,12 +19,14 @@
 - `app/hall/page.tsx` — replace `seededScores()` with a Supabase query returning
   top 12 rows per selected game, ordered by score descending
 - Inline TypeScript types for the two new tables (no `supabase gen types` tooling)
+- `app/games/[id]/page.tsx` stat strip — derive **PARTIDAS** (total play count via
+  `COUNT(*)`) and **MEJOR GLOBAL** (top score via `scores[0].score`) from the
+  `scores` table; **DIFICULTAD** stays hardcoded (no DB column)
 
 **Out of scope (for future specs):**
 
 - Supabase Auth / real user IDs — `player_name` stays as free text from localStorage
 - TypeScript DB types via `supabase gen types typescript`
-- The mini-leaderboard on `/games/[id]` detail page (still uses `seededScores()`)
 - Row Level Security policies
 - Realtime score subscriptions
 - Pagination or infinite scroll beyond top 12
@@ -142,7 +144,17 @@ No changes to `lib/data.ts` — `GAMES`, `PLAYERS`, and `seededScores` stay as-i
      removed — those values were fabricated; real per-user ranking is out of
      scope for this spec.
 
-5. **TypeScript check** — run `tsc --noEmit` and fix any errors before
+5. **Wire mini-leaderboard and stat strip on `app/games/[id]/page.tsx`** — replace
+   `seededScores()` with a single Supabase query that also drives the stat strip:
+   - Query: `.from('scores').select('player_name, score, achieved_at', { count: 'exact' }).eq('game_id', id).order('score', { ascending: false }).limit(10)`
+   - `count` (total rows) → **PARTIDAS**, formatted as "15.6K" style.
+   - `data[0].score` → **MEJOR GLOBAL** (already the max since ordered desc).
+   - Map `data` to `ScoreRow[]` (rank by index, format `achieved_at` as `DD/MM/YYYY` in UTC).
+   - If `data` is empty, render "AÚN NO HAY PUNTUACIONES" in place of the list.
+   - When count is 0 / data is empty, fall back to `game.plays` and `game.best`
+     from the static `GAMES` array so the stat strip is never blank.
+
+6. **TypeScript check** — run `tsc --noEmit` and fix any errors before
    marking the spec implemented.
 
 ## Acceptance Criteria
@@ -163,8 +175,13 @@ No changes to `lib/data.ts` — `GAMES`, `PLAYERS`, and `seededScores` stay as-i
       no rows for the selected game
 - [ ] Switching tabs in `/hall` triggers a fresh Supabase query for that game
 - [ ] The logged-in user's personal best row is no longer rendered in `/hall`
-- [ ] `/games/[id]` detail page mini-leaderboard still uses `seededScores()`
-      and is unaffected
+- [ ] `/games/[id]` detail page mini-leaderboard shows real top-10 rows from
+      Supabase, ordered by score descending
+- [ ] `/games/[id]` shows "AÚN NO HAY PUNTUACIONES" when no scores exist for
+      the game
+- [ ] `/games/[id]` PARTIDAS stat reflects the real count of rows in `scores`
+      for the game
+- [ ] `/games/[id]` MEJOR GLOBAL stat reflects the real top score from `scores`
 - [ ] `tsc --noEmit` passes with no errors
 
 ## Decisions
