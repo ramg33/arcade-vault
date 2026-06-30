@@ -4,6 +4,7 @@ import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { GAMES, type ScoreEntry } from '@/lib/data';
 import { getUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/client';
 import AsteroidsGame from '@/components/games/AsteroidsGame';
 
 export default function GamePlayerPage({ params }: { params: Promise<{ id: string }> }) {
@@ -57,6 +58,14 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
       all.push({ game: id, score, name, at: Date.now() });
       localStorage.setItem('av_scores', JSON.stringify(all));
     } catch {}
+
+    createClient()
+      .from('scores')
+      .insert({ game_id: id, player_name: name, score })
+      .then(({ error }) => {
+        if (error) console.error('Supabase score insert failed:', error);
+      });
+
     setSaved(true);
   };
 
