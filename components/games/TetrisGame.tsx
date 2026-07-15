@@ -13,8 +13,10 @@ export type TetrisGameProps = {
 export default function TetrisGame(props: TetrisGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cbRef = useRef(props);
+  // eslint-disable-next-line react-hooks/refs
   cbRef.current = props;
   const pausedRef = useRef(props.paused);
+  // eslint-disable-next-line react-hooks/refs
   pausedRef.current = props.paused;
 
   useEffect(() => {
@@ -88,7 +90,6 @@ export default function TetrisGame(props: TetrisGameProps) {
 
     type Piece = { type: number; shape: number[][]; x: number; y: number };
 
-    let board: number[][];
     let current: Piece;
     let next: Piece;
     let score: number;
@@ -347,7 +348,7 @@ export default function TetrisGame(props: TetrisGameProps) {
       rafHandle = requestAnimationFrame(loop);
     }
 
-    board = createBoard();
+    const board = createBoard();
     score = 0;
     lines = 0;
     level = 1;

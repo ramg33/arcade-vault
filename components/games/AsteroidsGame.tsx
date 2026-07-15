@@ -8,6 +8,7 @@ export type AsteroidsGameProps = {
   onLivesChange: (lives: number) => void;
   onLevelChange: (level: number) => void;
   onGameOver: (finalScore: number) => void;
+  onTogglePause?: () => void;
 };
 
 export default function AsteroidsGame(props: AsteroidsGameProps) {
@@ -27,7 +28,13 @@ export default function AsteroidsGame(props: AsteroidsGameProps) {
     const keys: Record<string, boolean> = {};
     const justPressed: Record<string, boolean> = {};
 
+    const GAME_KEYS = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
+
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Prevent Space from activating a focused button (e.g. the pause
+      // toggle), and stop arrow keys from scrolling the page.
+      if (GAME_KEYS.has(e.code)) e.preventDefault();
+      if (e.code === 'Escape') cbRef.current.onTogglePause?.();
       if (!keys[e.code]) justPressed[e.code] = true;
       keys[e.code] = true;
     };
