@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import AsteroidsGame from '@/components/games/AsteroidsGame';
 import TetrisGame from '@/components/games/TetrisGame';
 import BloqueBusterGame from '@/components/games/BloqueBusterGame';
+import SerpentinaGame from '@/components/games/SerpentinaGame';
 
 export default function GamePlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -18,6 +19,7 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
   const isAsteroids = id === 'asteroids';
   const isTetris = id === 'tetris';
   const isBloqueBuster = id === 'bloque-buster';
+  const isSerpentina = id === 'serpentina';
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -26,13 +28,17 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
   const [tetrisKey, setTetrisKey] = useState(0);
   const [bloqueBusterLevel, setBloqueBusterLevel] = useState(1);
   const [bloqueBusterKey, setBloqueBusterKey] = useState(0);
+  const [serpentinaLevel, setSerpentinaLevel] = useState(1);
+  const [serpentinaKey, setSerpentinaKey] = useState(0);
   const level = isAsteroids
     ? asteroidsLevel
     : isTetris
       ? tetrisLevel
       : isBloqueBuster
         ? bloqueBusterLevel
-        : Math.floor(score / 2500) + 1;
+        : isSerpentina
+          ? serpentinaLevel
+          : Math.floor(score / 2500) + 1;
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState(() => getUser()?.name ?? 'INVITADO');
@@ -40,7 +46,7 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
   const [gameKey, setGameKey] = useState(0);
 
   useEffect(() => {
-    if (isAsteroids || isTetris || isBloqueBuster || over || paused) return;
+    if (isAsteroids || isTetris || isBloqueBuster || isSerpentina || over || paused) return;
     const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
     return () => clearInterval(t);
   }, [isAsteroids, isTetris, isBloqueBuster, over, paused]);
@@ -62,6 +68,10 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
     if (isBloqueBuster) {
       setBloqueBusterKey((k) => k + 1);
       setBloqueBusterLevel(1);
+    }
+    if (isSerpentina) {
+      setSerpentinaKey((k) => k + 1);
+      setSerpentinaLevel(1);
     }
   };
 
@@ -210,6 +220,50 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
             onScoreChange={setScore}
             onLivesChange={setLives}
             onLevelChange={setBloqueBusterLevel}
+            onGameOver={(finalScore) => {
+              setScore(finalScore);
+              setOver(true);
+            }}
+            onTogglePause={() => setPaused((p) => !p)}
+          />
+        </div>
+      ) : isSerpentina ? (
+        <div style={{ maxWidth: 800, width: '100%', margin: '0 auto' }}>
+          <div className="player-hud">
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              <div className="hud-stat">
+                <div className="l">Jugador</div>
+                <div className="v" style={{ color: 'var(--ink)' }}>
+                  {name}
+                </div>
+              </div>
+              <div className="hud-stat">
+                <div className="l">Puntuación</div>
+                <div className="v">{score.toLocaleString('es-ES')}</div>
+              </div>
+              <div className="hud-stat level">
+                <div className="l">Nivel</div>
+                <div className="v">{String(level).padStart(2, '0')}</div>
+              </div>
+            </div>
+            <div className="hud-actions">
+              <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
+                {paused ? 'REANUDAR' : 'PAUSA'}
+              </button>
+              <button className="btn magenta" onClick={endGame}>
+                FIN
+              </button>
+              <button className="btn ghost" onClick={() => router.push(`/games/${id}`)}>
+                SALIR
+              </button>
+            </div>
+          </div>
+          <SerpentinaGame
+            key={serpentinaKey}
+            paused={paused}
+            onScoreChange={setScore}
+            onLivesChange={setLives}
+            onLevelChange={setSerpentinaLevel}
             onGameOver={(finalScore) => {
               setScore(finalScore);
               setOver(true);
