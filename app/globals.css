@@ -1334,3 +1334,25 @@ a { color: inherit; text-decoration: none; }
   user-select: none;
 }
 .bloque-buster-touch-controls button:active { background: rgba(255,255,255,0.2); }
+
+/* ── Serpentina touch controls (mobile only) ─────────────────────────────── */
+.serpentina-touch-controls { display: none; gap: 12px; }
+@media (pointer: coarse) {
+  .serpentina-touch-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+}
+.serpentina-touch-controls button {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+.serpentina-touch-controls button:active { background: rgba(255,255,255,0.2); }
