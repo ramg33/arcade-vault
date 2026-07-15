@@ -1,6 +1,6 @@
 # 09 — Bloque Buster Game Integration
 
-> **Status:** Approved · **Depends on:** SPEC 05, SPEC 06, SPEC 07 · **Date:** 2026-07-14
+> **Status:** Implemented · **Depends on:** SPEC 05, SPEC 06, SPEC 07 · **Date:** 2026-07-14
 > **Objective:** Port the vanilla JS Arkanoid game from `references/started-games/04-arkanoid/`
 > into Arcade Vault as the `bloque-buster` game — reusing its existing GAMES[] placeholder,
 > registering it in Supabase, and wiring a fully playable page with spritesheet/sound assets,
@@ -22,14 +22,16 @@
 - `components/games/BloqueBusterGame.tsx` — React component porting the vanilla JS logic,
   loading the spritesheet/audio assets client-side inside `useEffect`
 - `app/games/bloque-buster/play/page.tsx` — play-page wiring (import, flags, JSX branch)
+- `Escape` key toggles pause via an `onTogglePause` prop, same pattern as `AsteroidsGame`
+  (added post-review; see amended Decisions below)
 
 **Out of scope:**
 
 - Mouse-move paddle control — keyboard (`ArrowLeft`/`ArrowRight`) + touch buttons only
 - Click-to-jump-to-level buttons on the pause overlay — pause uses the shared
   "EN PAUSA" / "PULSA REANUDAR" overlay like every other game
-- `KeyP`/`Escape` pause handling inside the component — pause is controlled by the parent
-  page's PAUSA button only
+- `KeyP` pause handling inside the component — only `Escape` and the parent page's PAUSA
+  button toggle pause (see amended Decisions below)
 - A "win" ending after level 5 — on clearing level 5 the game loops back to level 1 with
   ball speed reset to the level-1 base, keeping score, so the session stays infinite like
   Asteroids/Tetris instead of ending
@@ -134,6 +136,7 @@ seeded values (`28450`/`'12.4K'`) exactly as they are today; no edits needed to 
 - [ ] Clearing all 5 levels loops back to level 1 with ball speed reset, without ending the game
 - [ ] Losing all 3 lives triggers `onGameOver` and opens the game-over modal automatically
 - [ ] PAUSA button pauses the game loop; canvas shows "EN PAUSA"; REANUDAR resumes
+- [ ] `Escape` key also toggles pause (matching `AsteroidsGame`'s `onTogglePause` pattern)
 - [ ] FIN button opens the game-over modal with the last score pre-filled
 
 ### Play page — score saving
@@ -167,6 +170,13 @@ seeded values (`28450`/`'12.4K'`) exactly as they are today; no edits needed to 
   TetrisGame, this port keeps the reference's PNG-based rendering and the two MP3 effects,
   copied into `public/games/bloque-buster/`. This is a deliberate deviation from the
   no-external-assets convention used by the other two games, per explicit user choice.
+
+- **Amendment (post-review): `Escape` toggles pause after all** — the original scope excluded
+  all in-component pause key handling, matching Tetris. During manual testing the user expected
+  `Escape` to pause, as it does in Asteroids. Scope updated to add an `onTogglePause` prop
+  (identical to `AsteroidsGame`'s pattern: the component calls `cbRef.current.onTogglePause?.()`
+  on `Escape` keydown; the parent page's PAUSA button remains the other way to toggle pause).
+  `KeyP` stays unhandled — only `Escape` and the PAUSA button.
 
 - **Mouse-move paddle control and pause-screen level-select buttons dropped** — every other
   ported game is keyboard+touch-button only, and pause is a single shared "EN PAUSA" overlay

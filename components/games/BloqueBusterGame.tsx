@@ -8,6 +8,7 @@ export type BloqueBusterGameProps = {
   onLivesChange: (lives: number) => void;
   onLevelChange: (level: number) => void;
   onGameOver: (finalScore: number) => void;
+  onTogglePause?: () => void;
 };
 
 type SpriteFrame = { sx: number; sy: number; sw: number; sh: number };
@@ -162,11 +163,23 @@ export default function BloqueBusterGame(props: BloqueBusterGameProps) {
 
     const bounceSound = new Audio('/games/bloque-buster/sounds/ball-bounce.mp3');
     const breakSound = new Audio('/games/bloque-buster/sounds/break-sound.mp3');
+    bounceSound.preload = 'auto';
+    breakSound.preload = 'auto';
+    bounceSound.load();
+    breakSound.load();
+
+    // Clones must be kept referenced until they finish playing — an orphan
+    // clone with no live reference can be garbage-collected mid-fetch on its
+    // first play, before playback locks in, silently dropping the sound.
+    const activeClones = new Set<HTMLAudioElement>();
 
     function playSound(audio: HTMLAudioElement) {
       try {
         const clone = audio.cloneNode() as HTMLAudioElement;
-        clone.play().catch(() => {});
+        activeClones.add(clone);
+        const release = () => activeClones.delete(clone);
+        clone.addEventListener('ended', release);
+        clone.play().catch(release);
       } catch {}
     }
 
@@ -174,6 +187,7 @@ export default function BloqueBusterGame(props: BloqueBusterGameProps) {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') e.preventDefault();
+      if (e.code === 'Escape') cbRef.current.onTogglePause?.();
       keys[e.code] = true;
     };
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -372,6 +386,7 @@ export default function BloqueBusterGame(props: BloqueBusterGameProps) {
 
     let lastTime: number | null = null;
     let rafHandle: number;
+    let cancelled = false;
 
     function loop(ts: number) {
       const dt = lastTime === null ? 0 : Math.min((ts - lastTime) / 1000, 0.05);
@@ -383,6 +398,7 @@ export default function BloqueBusterGame(props: BloqueBusterGameProps) {
 
     const rawImg = new Image();
     rawImg.onload = () => {
+      if (cancelled) return;
       const oc = document.createElement('canvas');
       oc.width = rawImg.width;
       oc.height = rawImg.height;
@@ -397,6 +413,7 @@ export default function BloqueBusterGame(props: BloqueBusterGameProps) {
     rawImg.src = '/games/bloque-buster/spritesheet-breakout.png';
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(rafHandle);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
