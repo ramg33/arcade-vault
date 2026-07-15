@@ -1,6 +1,6 @@
 # SPEC 10 — Serpentina (Snake) Game
 
-> Status: Approved · Depends on: SPEC 05, SPEC 06, SPEC 07 · Date: 2026-07-14
+> Status: Implemented · Depends on: SPEC 05, SPEC 06, SPEC 07 · Date: 2026-07-14
 > Objective: Implement a classic grid-based Snake game as "Serpentina" — filling the
 > existing roster placeholder — with sprite-rendered fruit as food, wired to Supabase
 > and the shared leaderboard following the /add-game pattern.

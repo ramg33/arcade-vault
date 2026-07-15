@@ -42,9 +42,9 @@ const FRUIT_SPRITES: Record<string, SpriteFrame> = {
 
 const FRUIT_KINDS = Object.keys(FRUIT_SPRITES);
 
-const W = 800;
-const H = 800;
-const TILE = 32;
+const W = 600;
+const H = 600;
+const TILE = 24;
 const COLS = W / TILE;
 const ROWS = H / TILE;
 const BASE_INTERVAL = 200;
@@ -312,8 +312,8 @@ export default function SerpentinaGame(props: SerpentinaGameProps) {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
       <canvas
         ref={canvasRef}
-        width={800}
-        height={800}
+        width={600}
+        height={600}
         style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
       />
       <div className="serpentina-touch-controls">
