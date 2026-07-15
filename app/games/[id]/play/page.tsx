@@ -6,6 +6,7 @@ import { GAMES, type ScoreEntry } from '@/lib/data';
 import { getUser } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
 import AsteroidsGame from '@/components/games/AsteroidsGame';
+import TetrisGame from '@/components/games/TetrisGame';
 
 export default function GamePlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -14,11 +15,18 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
   const game = GAMES.find((g) => g.id === id);
 
   const isAsteroids = id === 'asteroids';
+  const isTetris = id === 'tetris';
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [asteroidsLevel, setAsteroidsLevel] = useState(1);
-  const level = isAsteroids ? asteroidsLevel : Math.floor(score / 2500) + 1;
+  const [tetrisLevel, setTetrisLevel] = useState(1);
+  const [tetrisKey, setTetrisKey] = useState(0);
+  const level = isAsteroids
+    ? asteroidsLevel
+    : isTetris
+      ? tetrisLevel
+      : Math.floor(score / 2500) + 1;
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState(() => getUser()?.name ?? 'INVITADO');
@@ -26,10 +34,10 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
   const [gameKey, setGameKey] = useState(0);
 
   useEffect(() => {
-    if (isAsteroids || over || paused) return;
+    if (isAsteroids || isTetris || over || paused) return;
     const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
     return () => clearInterval(t);
-  }, [isAsteroids, over, paused]);
+  }, [isAsteroids, isTetris, over, paused]);
 
   const endGame = () => setOver(true);
 
@@ -41,6 +49,10 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
     setOver(false);
     setSaved(false);
     if (isAsteroids) setGameKey((k) => k + 1);
+    if (isTetris) {
+      setTetrisKey((k) => k + 1);
+      setTetrisLevel(1);
+    }
   };
 
   const handleSaveScore = () => {
@@ -101,6 +113,50 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
             onScoreChange={setScore}
             onLivesChange={setLives}
             onLevelChange={setAsteroidsLevel}
+            onGameOver={(finalScore) => {
+              setScore(finalScore);
+              setOver(true);
+            }}
+            onTogglePause={() => setPaused((p) => !p)}
+          />
+        </div>
+      ) : isTetris ? (
+        <div style={{ maxWidth: 420, width: '100%', margin: '0 auto' }}>
+          <div className="player-hud">
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              <div className="hud-stat">
+                <div className="l">Jugador</div>
+                <div className="v" style={{ color: 'var(--ink)' }}>
+                  {name}
+                </div>
+              </div>
+              <div className="hud-stat">
+                <div className="l">Puntuación</div>
+                <div className="v">{score.toLocaleString('es-ES')}</div>
+              </div>
+              <div className="hud-stat level">
+                <div className="l">Nivel</div>
+                <div className="v">{String(level).padStart(2, '0')}</div>
+              </div>
+            </div>
+            <div className="hud-actions">
+              <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
+                {paused ? 'REANUDAR' : 'PAUSA'}
+              </button>
+              <button className="btn magenta" onClick={endGame}>
+                FIN
+              </button>
+              <button className="btn ghost" onClick={() => router.push(`/games/${id}`)}>
+                SALIR
+              </button>
+            </div>
+          </div>
+          <TetrisGame
+            key={tetrisKey}
+            paused={paused}
+            onScoreChange={setScore}
+            onLivesChange={setLives}
+            onLevelChange={setTetrisLevel}
             onGameOver={(finalScore) => {
               setScore(finalScore);
               setOver(true);

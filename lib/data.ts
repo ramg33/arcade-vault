@@ -115,6 +115,17 @@ export const GAMES: Game[] = [
     best: 24,
     plays: '4.2K',
   },
+  {
+    id: 'tetris',
+    title: 'TETRIS',
+    short: 'Rota y encaja piezas para limpiar líneas.',
+    long: 'Las piezas caen sin parar y el tablero no perdona. Rota y coloca cada bloque en el lugar exacto para limpiar líneas y ganar puntos. ¿Hasta qué nivel puedes aguantar?',
+    cat: 'PUZZLE',
+    cover: 'cover-tetris',
+    color: 'cyan',
+    best: 0,
+    plays: '0',
+  },
 ];
 
 export const CATS = ['TODOS', 'ARCADE', 'PUZZLE', 'SHOOTER', 'VERSUS'];
