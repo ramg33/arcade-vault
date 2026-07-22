@@ -59,6 +59,12 @@ Project skills live in `.agents/skills/` (not `~/.claude/`). `skills-lock.json` 
 - **`/add-game`** — port a vanilla JS canvas game into the platform. Five mandatory phases (discover → metadata → spec → implement → verify) covering the React component, play-page wiring, Supabase row, CSS cover art, and leaderboard. Use it for every new game; it encodes rules that are easy to get wrong (entity classes inside `useEffect`, the `cbRef`/`pausedRef` pattern, never touching `handleSaveScore`).
 - **`/frontend-design`** — always use when designing user-facing UI.
 
+## Agents
+
+Project subagents live in `.claude/agents/`.
+
+- **`gamer-planner`** — plans and recommends the next game to add. It weighs category balance, the unimplemented `GAMES[]` stubs, and `/add-game` canvas-contract port feasibility, then returns one recommendation (with Spanish copy drafts) and hands off to `/add-game`. It is **advisory only** — it never builds a game. It keeps a persistent, no-repeat memory of every suggestion in `references/games-suggestions-todo.md` (created on first run). Use it when deciding what to build next; then run `/add-game <id>`.
+
 ## Architecture
 
 Uses the **App Router** exclusively (`app/` directory). No Pages Router.
