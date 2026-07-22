@@ -370,6 +370,9 @@ export default function GamePlayerPage({ params }: { params: Promise<{ id: strin
               <button className="btn" onClick={restart}>
                 JUGAR DE NUEVO
               </button>
+              <button className="btn green" onClick={() => router.push(`/games/${id}`)}>
+                VER MARCADOR
+              </button>
               <button className="btn magenta" onClick={() => router.push('/')}>
                 VOLVER AL VAULT
               </button>
